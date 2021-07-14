@@ -54,7 +54,7 @@ namespace ListImplementation
 
 			//Searching algorithm starts here
 			if (lastIndex >= startIndex)
-			{
+			{  
 				int midIndex = GetMedian(startIndex, lastIndex);
 
 				int comparisonResult = comparer.Compare(array[midIndex], value);
@@ -90,7 +90,7 @@ namespace ListImplementation
 				return -1;
 
 			//Searching algorithm starts here
-			while (lastIndex > startIndex)
+			while (lastIndex >= startIndex)
 			{
 				int midIndex = GetMedian(startIndex, lastIndex);
 				int comparisonResult = comparer.Compare(array[midIndex], value);
