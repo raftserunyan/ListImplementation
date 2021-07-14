@@ -10,7 +10,7 @@ namespace ListImplementation
 
             var list = new MyList<int>(arr);
 
-            int result = list.BinarySearch(0, arr.Length, 1, null);
+            int result = list.BinarySearch(3, 3, 1, null);
 
 			Console.WriteLine(result);
         }

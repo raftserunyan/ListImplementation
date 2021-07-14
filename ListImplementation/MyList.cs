@@ -45,8 +45,6 @@ namespace ListImplementation
 			//Input validations
 			if (array == null)
 				throw new ArgumentNullException(nameof(array));
-			if (lastIndex - startIndex < 0)
-				throw new ArgumentException($"Invalid offset length. ({nameof(startIndex)} - {nameof(lastIndex)} < 0)");
 			if (comparer == null)
 				comparer = Comparer<T>.Default;
 
