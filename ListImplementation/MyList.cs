@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace ListImplementation
 {
@@ -36,6 +35,84 @@ namespace ListImplementation
 				if (newCapacity < min) newCapacity = min;
 				Capacity = newCapacity;
 			}
+		}
+		private static int GetMedian(int low, int hi)
+		{
+			return low + ((hi - low) >> 1);
+		}
+		private int BinarySearchRecursion<T>(T[] array, int startIndex, int lastIndex, T value, IComparer<T>? comparer)
+		{
+			//Input validations
+			if (array == null)
+				throw new ArgumentNullException(nameof(array));
+			if (lastIndex - startIndex < 0)
+				throw new ArgumentException($"Invalid offset length. ({nameof(startIndex)} - {nameof(lastIndex)} < 0)");
+			if (comparer == null)
+				comparer = Comparer<T>.Default;
+
+			//Binary search won't search for null values
+			if (value == null)
+				return -1;
+
+			//Searching algorithm starts here
+			if (lastIndex >= startIndex)
+			{
+				int midIndex = GetMedian(startIndex, lastIndex);
+
+				int comparisonResult = comparer.Compare(array[midIndex], value);
+
+				if (comparisonResult == 0)
+				{
+					return midIndex;
+				}
+				else if (comparisonResult < 0)
+				{
+					return BinarySearchRecursion<T>(array, midIndex + 1, lastIndex, value, comparer); //Take the right part
+				}
+				else
+				{
+					return BinarySearchRecursion<T>(array, startIndex, midIndex - 1, value, comparer); //Take the left part
+				}
+			}
+
+			return -1;
+		}
+		private int BinarySearchIteration<T>(T[] array, int startIndex, int lastIndex, T value, IComparer<T>? comparer)
+		{
+			//Input validations
+			if (array == null)
+				throw new ArgumentNullException(nameof(array));
+			if (lastIndex - startIndex < 0)
+				throw new ArgumentException($"Invalid offset length. ({nameof(startIndex)} - {nameof(lastIndex)} < 0)");
+			if (comparer == null)
+				comparer = Comparer<T>.Default;
+
+			//Binary search won't search for null values
+			if (value == null)
+				return -1;
+
+			//Searching algorithm starts here
+			while (lastIndex > startIndex)
+			{
+				int midIndex = GetMedian(startIndex, lastIndex);
+				int comparisonResult = comparer.Compare(array[midIndex], value);
+
+				if (comparisonResult == 0)
+				{
+					return midIndex;
+				}
+				else if (comparisonResult < 0)
+				{
+					startIndex = midIndex + 1; // Take the 'right' part
+				}
+				else
+				{
+					lastIndex = midIndex - 1; //Take the 'left' part
+				}
+			}
+
+			return -1;
+			
 		}
 		#endregion
 
@@ -97,7 +174,7 @@ namespace ListImplementation
 			set
 			{
 				if (value < _size)
-					throw new ArgumentOutOfRangeException(nameof(value), "Capacity must be greater than count of elements in the list");
+					throw new ArgumentOutOfRangeException(nameof(value), "Capacity must be equal or greater than count of elements in the list");
 
 				if (value != _items.Length)
 				{
@@ -163,7 +240,7 @@ namespace ListImplementation
 			// Note that insertions at the end are legal.
 			if ((uint)index > (uint)_size)
 			{
-				throw new ArgumentOutOfRangeException(nameof(index), "Argument was out of bounds of the array.");
+				throw new ArgumentOutOfRangeException(nameof(index), "Argument was outside of bounds of the array.");
 			}
 
 			if (_size == _items.Length)
@@ -370,6 +447,14 @@ namespace ListImplementation
 			}
 		}
 
+		public int BinarySearch(T item)
+		{
+			return BinarySearch(0, Count, item, null);
+		}
+		public int BinarySearch(T item, IComparer<T> comparer)
+		{
+			return BinarySearch(0, Count, item, comparer);
+		}
 		public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
 		{
 			if (index < 0)
@@ -379,17 +464,9 @@ namespace ListImplementation
 			if (_size - index < count)
 				throw new ArgumentException("Invalid offset length.");
 
-			return Array.BinarySearch<T>(_items, index, count, item, comparer);
+			return BinarySearchRecursion<T>(_items, index, count + index - 1, item, comparer);
 		}
-		public int BinarySearch(T item)
-		{
-			return BinarySearch(0, Count, item, null);
-		}
-		public int BinarySearch(T item, IComparer<T> comparer)
-		{
-			return BinarySearch(0, Count, item, comparer);
-		}
-
+		
 		public MyList<TOutput> ConvertAll<TOutput>(Converter<T, TOutput> converter)
 		{
 			if (converter == null)
