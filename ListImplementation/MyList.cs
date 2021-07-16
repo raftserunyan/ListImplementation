@@ -423,7 +423,6 @@ namespace ListImplementation
 			}
 			_version++;
 		}
-
 		public bool Contains(T item)
 		{
 			if ((Object)item == null)
